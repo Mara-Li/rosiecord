@@ -27,8 +27,7 @@ jobs:
       - name: Ensure main utils are installed
         id: core
         run: brew install coreutils ldid
-      - name: build scripts
-        id: build
+      - name: Build scripts
         run: |
           pnpm install
           pnpm run build
