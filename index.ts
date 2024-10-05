@@ -8,6 +8,7 @@
 
 import fs from 'fs';
 import { Colors, Shell, States, Constants, Divider } from './constants.js';
+import {program, Option} from "commander";
 
 class Main extends Colors {
     type: string;
@@ -85,7 +86,7 @@ class Inject extends Colors {
         const requiredPatches = (await M.get(this.getParam)).filter(item => {
             if (!this.hasClean) return true;
 
-            return process.argv[2] == "k2genmity"
+            return k2genmity
                 ? (item !== (item.includes("Development")
                     ? "Enmity.Development.Official.deb"
                     : "Enmity.deb"))
@@ -231,6 +232,24 @@ class Initialiser extends States {
     }
 }
 
+function commandLine() {
+    
+    const verifyIPA = (value: string) => {
+        if (!value.match(/.*Discord.*\.ipa/)) {
+          console.error('Invalid IPA link');
+          process.exit(1);
+        }
+        return value;
+    }
+    
+    program
+      .addOption(new Option('-c, --custom', 'Customize the bundle ID').conflicts('-k, --k2genmity'))
+      .addOption(new Option("-k, --k2genmity", "Use K2genmity's patches"))
+      .addOption(new Option("-l, --discord-link <link>", "Discord's IPA link").argParser(verifyIPA).default(Constants.IPA_FETCH_LINK))
+      .parse(process.argv);
+   return program.opts<{custom: boolean, k2genmity: boolean, discordLink: string}>();
+}
+
 const main = async (): Promise<void> => {
     const START_TIME: number = Date.now();
 
@@ -240,7 +259,8 @@ const main = async (): Promise<void> => {
     const Init: Initialiser = new Initialiser();
 
     const { version } = M.load('./package.json');
-    const IPA_LINK = Constants.IPA_FETCH_LINK;
+    
+    const IPA_LINK = discordLink;
 
     // Gets just the IPA Name, "Discord_158" or whatever
     const [, IPA_VERSION] = IPA_LINK.match(/.*Discord(.*)\..*\.ipa/) as string[];
@@ -334,7 +354,7 @@ const main = async (): Promise<void> => {
         )
     });
 
-    if (process.argv[2] == "custom") {
+    if (custom) {
         await Shell.write(`${S.PENDING}${M.CYAN} Setting bundle ID to ${M.PINK}\"com.rosie.rosiecord\"${M.CYAN}...${M.ENDC}\r`);
         await Shell.run(`plutil -replace CFBundleIdentifier -string "com.rosie.rosiecord" ${MAIN_PLIST} & wait $!`, (stderr) => {
             Shell.write(stderr
@@ -383,5 +403,6 @@ const main = async (): Promise<void> => {
     await Shell.write(`${S.SUCCESS} Successfully built ${M.PINK}Rosiecord${M.GREEN} in ${M.CYAN}${(END_TIME - START_TIME) / 1000} seconds${M.GREEN}.`)
 }
 
+const { custom, k2genmity, discordLink } = commandLine();
 await main();
 export { };

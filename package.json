@@ -4,14 +4,21 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "prebuild": "clear",
     "build": "tsc",
-    "start": "clear && yarn build && node ."
+    "prestart": "pnpm run build",
+    "start": "node ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/acquitelol/rosiecord.git"
   },
-  "keywords": ["enmity", "rosiecord", "plumpycord", "discord"],
+  "keywords": [
+    "enmity",
+    "rosiecord",
+    "plumpycord",
+    "discord"
+  ],
   "author": "Rosie<3",
   "license": "ISC",
   "bugs": {
@@ -21,6 +28,7 @@
   "description": "A wrapper for the @enmity-mod client which adds custom icons, fonts, and other modifications.",
   "devDependencies": {
     "@types/node": "^18.11.18",
+    "commander": "^12.1.0",
     "nodemon": "^2.0.20",
     "typescript": "^4.9.4"
   }

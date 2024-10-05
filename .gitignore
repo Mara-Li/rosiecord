@@ -14,3 +14,4 @@ __MACOSX
 eggcrypt.deb
 libflex*.deb
 FlexLoad*.dylib
+.idea

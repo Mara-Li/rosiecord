@@ -1,14 +1,20 @@
 name: Build Enmity and Inject Rosiecord
 on:
-  push:
   workflow_dispatch:
+    inputs:
+      discord_link:
+        description: 'Discord link to download'
+        required: true
+        type: string
+
+
 
 jobs:
   build:
     name: Build Enmity and Inject Rosiecord
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Ensure main utils are installed
         id: core
@@ -16,7 +22,7 @@ jobs:
 
       - name: Run Main Node Script to Patch Rosiecord
         id: build
-        run: node ./index.js
+        run: node ./index.js --discord-link ${{ github.event.inputs.discord_link }}
         
       - name: Retrieve version
         id: version
