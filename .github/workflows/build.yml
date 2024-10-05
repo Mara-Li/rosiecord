@@ -15,11 +15,23 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          node-version: 9
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          cache: 'pnpm'
+          node-version: 'latest'
       - name: Ensure main utils are installed
         id: core
         run: brew install coreutils ldid
-
+      - name: build scripts
+        id: build
+        run: |
+          pnpm install
+          pnpm run build
       - name: Run Main Node Script to Patch Rosiecord
         id: build
         run: node ./index.js --discord-link ${{ github.event.inputs.discord_link }}
